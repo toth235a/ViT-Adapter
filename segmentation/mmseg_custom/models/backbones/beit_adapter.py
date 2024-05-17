@@ -47,10 +47,10 @@ class BEiTAdapter(BEiT):
         ])
 
         self.up = nn.ConvTranspose2d(embed_dim, embed_dim, 2, 2)
-        self.norm1 = nn.SyncBatchNorm(embed_dim)
-        self.norm2 = nn.SyncBatchNorm(embed_dim)
-        self.norm3 = nn.SyncBatchNorm(embed_dim)
-        self.norm4 = nn.SyncBatchNorm(embed_dim)
+        self.norm1 = nn.GroupNorm(32, embed_dim)#self.norm1 = nn.SyncBatchNorm(embed_dim)
+        self.norm2 = nn.GroupNorm(32, embed_dim)#self.norm2 = nn.SyncBatchNorm(embed_dim)
+        self.norm3 = nn.GroupNorm(32, embed_dim)#self.norm3 = nn.SyncBatchNorm(embed_dim)
+        self.norm4 = nn.GroupNorm(32, embed_dim)#self.norm4 = nn.SyncBatchNorm(embed_dim)
 
         self.up.apply(self._init_weights)
         self.spm.apply(self._init_weights)

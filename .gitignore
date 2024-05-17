@@ -129,3 +129,5 @@ detection/visual/
 trash/
 setr/
 swin/
+segmentation/pretrained/
+segmentation/data/Public_all
