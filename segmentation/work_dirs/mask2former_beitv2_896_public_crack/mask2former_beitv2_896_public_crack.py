@@ -284,12 +284,12 @@ optimizer_config = dict(
 lr_config = dict(
     policy='poly',
     warmup='linear',
-    warmup_iters=4000,
+    warmup_iters=8000,
     warmup_ratio=1e-06,
     power=1.0,
     min_lr=0.0,
     by_epoch=False)
-runner = dict(type='IterBasedRunner', max_iters=4000)
+runner = dict(type='IterBasedRunner', max_iters=120000)
 checkpoint_config = dict(by_epoch=False, interval=4000, max_keep_ckpts=1)
 evaluation = dict(
     interval=4000, metric='mIoU', pre_eval=True, save_best='mIoU')

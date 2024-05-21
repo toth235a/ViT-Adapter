@@ -288,9 +288,9 @@ optimizer = dict(
     paramwise_cfg=dict(num_layers=24, layer_decay_rate=0.9))
 optimizer_config = dict(type="GradientCumulativeOptimizerHook", cumulative_iters=32)
 lr_config = dict(policy='poly', warmup='linear',
-                 warmup_iters=4000,
+                 warmup_iters=8000,
                  warmup_ratio=1e-6, power=1.0, min_lr=0.0, by_epoch=False)
-runner = dict(type='IterBasedRunner', max_iters=4000)
+runner = dict(type='IterBasedRunner', max_iters=120000)
 checkpoint_config = dict(by_epoch=False, interval=4000, max_keep_ckpts=1)
 evaluation = dict(interval=4000, metric='mIoU', pre_eval=True, save_best='mIoU')
 pretrained = 'pretrained/beitv2_large_patch16_224_pt1k_ft21k.pth'
