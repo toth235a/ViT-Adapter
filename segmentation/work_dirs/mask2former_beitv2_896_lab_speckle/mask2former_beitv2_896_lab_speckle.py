@@ -268,7 +268,7 @@ log_config = dict(
     interval=64, hooks=[dict(type='TextLoggerHook', by_epoch=False)])
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-load_from = 'pretrained/mask2former_beitv2_adapter_large_896_80k_ade20k.pth'
+load_from = 'work_dirs/mask2former_beitv2_896_public_crack/mask2former_beitv2_896_public_crack.pth'
 resume_from = None
 workflow = [('train', 1)]
 cudnn_benchmark = True
@@ -289,7 +289,7 @@ lr_config = dict(
     power=1.0,
     min_lr=0.0,
     by_epoch=False)
-runner = dict(type='IterBasedRunner', max_iters=320000)
+runner = dict(type='IterBasedRunner', max_iters=16000)
 checkpoint_config = dict(by_epoch=False, interval=4000, max_keep_ckpts=1)
 evaluation = dict(
     interval=4000, metric='mIoU', pre_eval=True, save_best='mIoU')

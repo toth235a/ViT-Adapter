@@ -1,3 +1,106 @@
+# Vit-Adapter for semantic segmentation - 1 GPU:
+
+This is a fork of [ViT-Adapter](https://github.com/czczup/ViT-Adapter) adapted for training on a single GPU. It was tested for binary segmentation (in particular crack segmentation) but should work for multi-class segmentation as well. With a crop size of 896 and batch size of one, it needs 24 GB of GPU memory for training and 9 GB for prediction. For training, you also need about 27 GB of free disk space.
+
+## Getting started
+
+Recommended installation:
+
+1. Clone the repository and set up the environment:
+    ```bash
+    git clone https://github.com/toth235a/ViT-Adapter && \
+    conda create -n mm python=3.9 && \
+    conda activate mm && \
+    pip install torch==1.9.0+cu111 torchvision==0.10.0+cu111 torchaudio==0.9.0 -f https://download.pytorch.org/whl/torch_stable.html && \
+    pip install mmcv-full==1.4.2 -f https://download.openmmlab.com/mmcv/dist/cu111/torch1.9.0/index.html && \
+    pip install timm==0.4.12 && \
+    pip install mmdet==2.22.0 && \
+    pip install mmsegmentation==0.20.2 && \
+    pip install scipy && \
+    pip install yapf==0.40.1 && \
+    pip install setuptools==67 && cd ViT-Adapter/segmentation/ops && python setup.py build install && cd ..
+    ```
+    (This is the same as for the original ViT-Adapter library but includes scipy and downgrades yapf and setuptools).
+
+2. Download one or more of the pretrained crack models from:
+    [https://huggingface.co/toth235a/mask2former_vitadapter_beitv2_896_crack/tree/main](https://huggingface.co/toth235a/mask2former_vitadapter_beitv2_896_crack/tree/main)
+    and put them in the `pretrained` folder. You can use one of the following commands for getting a model:
+
+    ```bash
+    wget -P pretrained https://huggingface.co/toth235a/mask2former_vitadapter_beitv2_896_crack/resolve/main/mask2former_beitv2_896_public_crack.pth
+    ```
+
+    ```bash
+    wget -P pretrained https://huggingface.co/toth235a/mask2former_vitadapter_beitv2_896_crack/resolve/main/mask2former_beitv2_896_speckled_crack.pth
+    ```
+    The first one is a generic model for cracks. The second one is a model for segmenting cracks in a laboratory setting, where the surface of the material was painted with speckles (typically for DIC). Check out data/lab_crack_speckled/images/train for examples. Please note that the speckles can be different according to the method used. If your speckles look different, this model may not work for you well. 
+
+
+3. If you want to train a crack model but do not want to use one of the above models, you can download and unzip a model trained on ade20k from below, in the Results and Models section (ade20k table, Mask2Former ViT-Adapter-L BEiT-L row for crop size of 640 or Mask2Former ViT-Adapter-L BEiTv2-L+COCO row for crop size of 896). Put it in the `pretrained` folder. You can do it with:
+
+    ```bash
+    wget -P pretrained https://github.com/czczup/ViT-Adapter/releases/download/v0.2.2/mask2former_beit_adapter_large_640_160k_ade20k.zip && \
+    unzip pretrained/mask2former_beit_adapter_large_640_160k_ade20k.zip -d pretrained && \
+    rm pretrained/mask2former_beit_adapter_large_640_160k_ade20k.zip
+    ```
+
+    ```bash
+    wget -P pretrained https://github.com/czczup/ViT-Adapter/releases/download/v0.3.1/mask2former_beitv2_adapter_large_896_80k_ade20k.zip && \
+    unzip pretrained/mask2former_beitv2_adapter_large_896_80k_ade20k.zip -d pretrained && \
+    rm pretrained/mask2former_beitv2_adapter_large_896_80k_ade20k.zip
+    ```
+
+4. For training, download the backbone from the Pretraining Sources section (BEiT row for crop size of 640, BEiTv2 row for crop size of 896). Put it in the `pretrained` folder. You can do it with:
+
+    ```bash
+    wget -P pretrained https://github.com/addf400/files/releases/download/v1.0/beit_large_patch16_224_pt22k_ft22k.pth
+    ```
+
+    ```bash
+    wget -P pretrained https://github.com/addf400/files/releases/download/BEiT-v2/beitv2_large_patch16_224_pt1k_ft21k.pth
+    ```
+
+5. From the `ViT-Adapter/segmentation` folder you can train the model with:
+    ```bash
+    bash dist_train.sh configs/crack/segmentation/configs/crack/mask2former_beitv2_896_lab_speckle.py 1
+    ```
+    This will finetune a general crack segmentation model.
+
+6. Put some images in the `data` folder and get the predicted masks with:
+    ```bash
+    CUDA_VISIBLE_DEVICES=0 python inference.py \
+      configs/crack/mask2former_beitv2_896_lab_speckle.py \
+      pretrained/mask2former_beitv2_896_speckled_crack.pth \
+      data \
+      --out output \
+      --palette crack
+    ```
+
+## Advanced
+
+More on config files:
+- `pretrained` is the backbone of the model (it occurs both at the beginning and the end of the config file).
+- `load_from` is the model you want to finetune. It is a good idea to start from a trained model such as one trained on the ade20k dataset.
+- `resume_from` is used when you started a training run, stopped it, and want to resume it.
+- In the `data` dictionary, `samples_per_gpu` is the batch size. Within the data dictionary, in the `train`, `test`, and `val` dictionaries, you have:
+  - `data_root` for the data root folder,
+  - `img_dir` for the image folder within the data root folder,
+  - `ann_dir` for the annotations (a.k.a. labels/masks) folder within the data root folder,
+  - `img_suffix` for the extension (or suffix) for the images,
+  - `seg_map_suffix` for the extension (or suffix) for the annotations.
+- In `runner = dict(type='IterBasedRunner', max_iters=120000)`, `max_iters` is the number of iterations. Depending on the size of the model and complexity of images, you need about 50,000-200,000 iterations.
+- `work_dir` is the working directory where the trained model and the log files are saved.
+
+The following main changes were made in this repository compared to the original one:
+- In `segmentation/mmseg_custom/models/backbones/beit_adapter.py` and `segmentation/mmseg_custom/models/backbones/adapter_modules.py`, `SyncBatchNorm` was changed to `GroupNorm` to allow a batch size of 1.
+- In `segmentation/train.py`, `distributed = False` was added to save memory.
+- In `segmentation/mmseg_custom/core/evaluation`, a `class_names.py` was added. This is an adapted version of `class_names.py` of the mmsegmentation library and includes a new crack dataset class and corresponding palette.
+- Config files were added for crack segmentation in the `segmentation/configs/crack` folder.
+- An `inference.py` was added that produces predictions both as masks (for cracks, the background is black and the crack is white) and as the original images overlaid with the predicted crack masks.
+
+The following is the original README.
+
+
 # Applying ViT-Adapter to Semantic Segmentation
 
 Our segmentation code is developed on top of [MMSegmentation v0.20.2](https://github.com/open-mmlab/mmsegmentation/tree/v0.20.2).
