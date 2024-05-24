@@ -1,4 +1,4 @@
-# Vit-Adapter for semantic segmentation - 1 GPU:
+# Vit-Adapter for semantic segmentation - training on a single GPU:
 
 This is a fork of [ViT-Adapter](https://github.com/czczup/ViT-Adapter) adapted for training on a single GPU. It was tested for binary segmentation (in particular crack segmentation) but should work for multi-class segmentation as well. With a crop size of 896 and batch size of one, it needs 24 GB of GPU memory for training and 9 GB for prediction. For training, you also need about 27 GB of free disk space.
 
@@ -50,7 +50,7 @@ Recommended installation:
     rm pretrained/mask2former_beitv2_adapter_large_896_80k_ade20k.zip
     ```
 
-4. For training, download the backbone from the Pretraining Sources section below (BEiT row for crop size of 640, BEiTv2 row for crop size of 896). Put it in the `pretrained` folder. You can do it with:
+4. (Optional, only for training) Download the backbone from the Pretraining Sources section below (BEiT row for crop size of 640, BEiTv2 row for crop size of 896). Put it in the `pretrained` folder. You can do it with:
 
     ```bash
     wget -P pretrained https://github.com/addf400/files/releases/download/v1.0/beit_large_patch16_224_pt22k_ft22k.pth
@@ -60,21 +60,22 @@ Recommended installation:
     wget -P pretrained https://github.com/addf400/files/releases/download/BEiT-v2/beitv2_large_patch16_224_pt1k_ft21k.pth
     ```
 
-5. From the `ViT-Adapter/segmentation` folder you can train the model with:
+5. Training: from the `ViT-Adapter/segmentation` folder you can train the model with:
     ```bash
     bash dist_train.sh configs/crack/segmentation/configs/crack/mask2former_beitv2_896_lab_speckle.py 1
     ```
-    This will finetune a general crack segmentation model.
+    This will finetune a general crack segmentation model with speckled crack images. See more about config files in the #Advanced section.
 
-6. Put some images in the `data` folder and get the predicted masks with:
+6. Prediction: put some images in the `data` folder and get the predicted masks with:
     ```bash
     CUDA_VISIBLE_DEVICES=0 python inference.py \
-      configs/crack/mask2former_beitv2_896_lab_speckle.py \
-      pretrained/mask2former_beitv2_896_speckled_crack.pth \
+      configs/crack/mask2former_beitv2_896_public_crack.py \
+      pretrained/mask2former_beitv2_896_public_crack.pth \
       data \
       --out output \
       --palette crack
     ```
+    Only the images in the folder will be analysed, not the ones in the subfolders.
 
 ## Advanced
 
