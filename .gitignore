@@ -131,5 +131,7 @@ setr/
 swin/
 segmentation/pretrained/*
 !segmentation/pretrained/.gitkeep
+segmentation/output/*
+!segmentation/output/.gitkeep
 segmentation/data/Public_all
-segmentation/work_dirs/mask2former_beitv2_896_public_crack
+segmentation/work_dirs/

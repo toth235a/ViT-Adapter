@@ -142,7 +142,7 @@ model = dict(
         stride=(426, 426)),
     init_cfg=None)
 dataset_type = 'CustomDataset'
-data_root = 'data/Public_all'
+#data_root = 'data/Public_all'
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 crop_size = (640, 640)
@@ -150,8 +150,7 @@ train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='LoadAnnotations'),
     dict(type='Resize', img_scale=(2048, 640), ratio_range=(0.5, 2.0)), 
-    #dict(type='ScoreBasedRandomCrop', crop_size=(640, 640)),
-    dict(type='RandomCropWithIgnoreLimit', crop_size=(640, 640), ignore_max_ratio=0.75),
+    dict(type='RandomCrop', crop_size=(640, 640)),
     dict(type='RandomFlip', prob=0.5),
     dict(type='PhotoMetricDistortion'),
     dict(
@@ -206,7 +205,7 @@ data = dict(
                 img_scale=(2048, 640), 
                 ratio_range=(0.5, 2.0)),
             #dict(type='ScoreBasedRandomCrop', crop_size=(640, 640)),
-            dict(type='RandomCropWithIgnoreLimit', crop_size=(640, 640), ignore_max_ratio=0.75),
+            dict(type='RandomCrop', crop_size=(640, 640)),
             dict(type='RandomFlip', prob=0.5),
             dict(type='PhotoMetricDistortion'),
             dict(
@@ -277,7 +276,7 @@ data = dict(
         ],
         classes=['background', 'crack']))
 log_config = dict(
-    interval=50, hooks=[dict(type='TextLoggerHook', by_epoch=False)])
+    interval=64, hooks=[dict(type='TextLoggerHook', by_epoch=False)])
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
 load_from = 'pretrained/mask2former_beit_adapter_large_640_160k_ade20k.pth.tar'
@@ -293,10 +292,10 @@ optimizer = dict(
     paramwise_cfg=dict(num_layers=24, layer_decay_rate=0.9))
 optimizer_config = dict(type="GradientCumulativeOptimizerHook", cumulative_iters=8)
 lr_config = dict(policy='poly', power=1.0, min_lr=0.0, by_epoch=False)
-runner = dict(type='IterBasedRunner', max_iters=160000)
-checkpoint_config = dict(by_epoch=False, interval=2000, max_keep_ckpts=1)
-evaluation = dict(interval=1000, metric='mIoU', pre_eval=True, save_best='mIoU')
+runner = dict(type='IterBasedRunner', max_iters=120000)
+checkpoint_config = dict(by_epoch=False, interval=4000, max_keep_ckpts=1)
+evaluation = dict(interval=4000, metric='mIoU', pre_eval=True, save_best='mIoU')
 pretrained = 'pretrained/beit_large_patch16_224_pt22k_ft22k.pth'
-work_dir = './work_dirs/mask2former_beit_640_public'
+work_dir = './work_dirs/mask2former_beit_640_public_crack'
 gpu_ids = range(0, 1)
-auto_resume = FalseMarin-Epagnier, La Tène
+auto_resume = False

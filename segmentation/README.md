@@ -16,7 +16,7 @@ Recommended installation:
     pip install timm==0.4.12 && \
     pip install mmdet==2.22.0 && \
     pip install mmsegmentation==0.20.2 && \
-    pip install scipy && \
+    pip install scipy==1.13.0 && \
     pip install yapf==0.40.1 && \
     pip install setuptools==67 && cd ViT-Adapter/segmentation/ops && python setup.py build install && cd ..
     ```
@@ -24,7 +24,7 @@ Recommended installation:
 
 2. Download one or more of the pretrained crack models from:
     [https://huggingface.co/toth235a/mask2former_vitadapter_beitv2_896_crack/tree/main](https://huggingface.co/toth235a/mask2former_vitadapter_beitv2_896_crack/tree/main)
-    and put them in the `pretrained` folder. You can use one of the following commands for getting a model:
+    and put them in the `pretrained` folder. You can do it with one of the following:
 
     ```bash
     wget -P pretrained https://huggingface.co/toth235a/mask2former_vitadapter_beitv2_896_crack/resolve/main/mask2former_beitv2_896_public_crack.pth
@@ -50,7 +50,7 @@ Recommended installation:
     rm pretrained/mask2former_beitv2_adapter_large_896_80k_ade20k.zip
     ```
 
-4. For training, download the backbone from the Pretraining Sources section (BEiT row for crop size of 640, BEiTv2 row for crop size of 896). Put it in the `pretrained` folder. You can do it with:
+4. For training, download the backbone from the Pretraining Sources section below (BEiT row for crop size of 640, BEiTv2 row for crop size of 896). Put it in the `pretrained` folder. You can do it with:
 
     ```bash
     wget -P pretrained https://github.com/addf400/files/releases/download/v1.0/beit_large_patch16_224_pt22k_ft22k.pth
@@ -98,7 +98,7 @@ The following main changes were made in this repository compared to the original
 - Config files were added for crack segmentation in the `segmentation/configs/crack` folder.
 - An `inference.py` was added that produces predictions both as masks (for cracks, the background is black and the crack is white) and as the original images overlaid with the predicted crack masks.
 
-The following is the original README.
+# The original README:
 
 
 # Applying ViT-Adapter to Semantic Segmentation

@@ -275,7 +275,7 @@ log_config = dict(
     interval=64, hooks=[dict(type='TextLoggerHook', by_epoch=False)])
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-load_from = 'work_dirs/mask2former_beitv2_896_public_crack/mask2former_beitv2_896_public_crack.pth' #pretrained/mask2former_beitv2_adapter_large_896_80k_ade20k.pth' #'./work_dirs/mask2former_beitv2_896_lab_speckle/best_mIoU_iter_76000_2images.pth'
+load_from = 'pretrained/mask2former_beitv2_896_public_crack.pth' #pretrained/mask2former_beitv2_adapter_large_896_80k_ade20k.pth' #'./work_dirs/mask2former_beitv2_896_lab_speckle/best_mIoU_iter_76000_2images.pth'
 resume_from = None #'work_dirs/mask2former_beitv2_adapter_large_896_320k_Kuba_nocrop_all_ss_eval_on_1408_grad_acc/iter_308000.pth'  #'work_dirs/mask2former_beit_adapter_large_640_160k_Kuba_nocrop_all_ss_grad_acc_eval_on_1280/iter_2000.pth'
 workflow = [('train', 1)]
 cudnn_benchmark = True
@@ -290,7 +290,7 @@ optimizer_config = dict(type="GradientCumulativeOptimizerHook", cumulative_iters
 lr_config = dict(policy='poly', warmup='linear',
                  warmup_iters=24000,
                  warmup_ratio=1e-6, power=1.0, min_lr=0.0, by_epoch=False)
-runner = dict(type='IterBasedRunner', max_iters=16000)
+runner = dict(type='IterBasedRunner', max_iters=160000)
 checkpoint_config = dict(by_epoch=False, interval=4000, max_keep_ckpts=1)
 evaluation = dict(interval=4000, metric='mIoU', pre_eval=True, save_best='mIoU')
 pretrained = 'pretrained/beitv2_large_patch16_224_pt1k_ft21k.pth'
