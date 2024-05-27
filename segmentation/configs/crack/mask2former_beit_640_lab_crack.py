@@ -4,7 +4,7 @@ num_classes = 2
 norm_cfg = dict(type='BN', requires_grad=True)
 model = dict(
     type='EncoderDecoderMask2Former',
-    pretrained='pretrained/beitv2_large_patch16_224_pt1k_ft21k.pth',
+    pretrained='pretrained/beit_large_patch16_224_pt22k_ft22k.pth',
     backbone=dict(
         type='BEiTAdapter',
         patch_size=16,
@@ -15,7 +15,7 @@ model = dict(
         qkv_bias=True,
         use_abs_pos_emb=False,
         use_rel_pos_bias=True,
-        img_size=896,
+        img_size=640,
         init_values=1e-06,
         drop_path_rate=0.3,
         conv_inplane=64,
@@ -33,7 +33,7 @@ model = dict(
         in_index=[0, 1, 2, 3],
         num_things_classes=0,
         num_stuff_classes=2,
-        num_queries=200,
+        num_queries=100,
         num_transformer_feat_level=3,
         pixel_decoder=dict(
             type='MSDeformAttnPixelDecoder',
@@ -138,19 +138,19 @@ model = dict(
         iou_thr=0.8,
         filter_low_score=True,
         mode='slide',
-        crop_size=(896, 896),
-        stride=(512, 512)),
+        crop_size=(640, 640),
+        stride=(426, 426)),
     init_cfg=None)
 dataset_type = 'CustomDataset'
-#data_root = 'data/Kuba_nocrop_all'
+#data_root = 'data/Public_all'
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
-crop_size = (896, 896)
+crop_size = (640, 640)
 train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='LoadAnnotations'),
-    dict(type='Resize', img_scale=(3584, 896), ratio_range=(0.5, 2.0)), 
-    dict(type='RandomCrop', crop_size=(896, 896)),
+    dict(type='Resize', img_scale=(2048, 640), ratio_range=(0.5, 2.0)), 
+    dict(type='RandomCrop', crop_size=(640, 640)),
     dict(type='RandomFlip', prob=0.5),
     dict(type='PhotoMetricDistortion'),
     dict(
@@ -158,7 +158,7 @@ train_pipeline = [
         mean=[123.675, 116.28, 103.53],
         std=[58.395, 57.12, 57.375],
         to_rgb=True),
-    dict(type='Pad', size=(896, 896), pad_val=0, seg_pad_val=255),
+    dict(type='Pad', size=(640, 640), pad_val=0, seg_pad_val=255),
     dict(type='ToMask'),
     dict(type='DefaultFormatBundle'),
     dict(
@@ -169,7 +169,7 @@ test_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(
         type='MultiScaleFlipAug',
-        img_scale=(3584, 1792), #2048, 1408),
+        img_scale=(2048, 1280),
         flip=False,
         transforms=[
             dict(type='Resize', keep_ratio=True),
@@ -188,35 +188,39 @@ data = dict(
     samples_per_gpu=1,
     workers_per_gpu=1,
     train=dict(
-            type='CustomDataset',
-            data_root='data/lab_crack_speckled',
-            img_dir='images/train',
-            ann_dir='annotations/train',
-            img_suffix='.png',
-            seg_map_suffix='.png',
-            pipeline=[
-                dict(type='LoadImageFromFile'),
-                dict(type='LoadAnnotations'),
-                dict(
-                    type='Resize',
-                    img_scale=(3584, 896), 
-                    ratio_range=(0.5, 2.0)),
-                dict(type='RandomCrop', crop_size=(896, 896)),
-                dict(type='RandomFlip', prob=0.5),
-                dict(type='PhotoMetricDistortion'),
-                dict(
-                    type='Normalize',
-                    mean=[123.675, 116.28, 103.53],
-                    std=[58.395, 57.12, 57.375],
-                    to_rgb=True),
-                dict(type='Pad', size=(896, 896), pad_val=0, seg_pad_val=255),
-                dict(type='ToMask'),
-                dict(type='DefaultFormatBundle'),
-                dict(
-                    type='Collect',
-                    keys=['img', 'gt_semantic_seg', 'gt_masks', 'gt_labels'])
-            ],
-            classes=['background', 'crack']),
+        #type='RepeatDataset',
+        #times=160000,
+        #dataset=dict(
+        type='CustomDataset',
+        data_root='data/lab_crack_speckled',
+        img_dir='images/train',
+        ann_dir='annotations/train',
+        img_suffix='.png',
+        seg_map_suffix='.png',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(type='LoadAnnotations'),
+            dict(
+                type='Resize',
+                img_scale=(2048, 640), 
+                ratio_range=(0.5, 2.0)),
+            #dict(type='ScoreBasedRandomCrop', crop_size=(640, 640)),
+            dict(type='RandomCrop', crop_size=(640, 640)),
+            dict(type='RandomFlip', prob=0.5),
+            dict(type='PhotoMetricDistortion'),
+            dict(
+                type='Normalize',
+                mean=[123.675, 116.28, 103.53],
+                std=[58.395, 57.12, 57.375],
+                to_rgb=True),
+            dict(type='Pad', size=(640, 640), pad_val=0, seg_pad_val=255),
+            dict(type='ToMask'),
+            dict(type='DefaultFormatBundle'),
+            dict(
+                type='Collect',
+                keys=['img', 'gt_semantic_seg', 'gt_masks', 'gt_labels'])
+        ],
+        classes=['background', 'crack']),#),
     val=dict(
         type='CustomDataset',
         data_root='data/lab_crack_speckled',
@@ -228,7 +232,7 @@ data = dict(
             dict(type='LoadImageFromFile'),
             dict(
                 type='MultiScaleFlipAug',
-                img_scale=(2048, 1408),
+                img_scale=(2048, 1280),
                 flip=False,
                 transforms=[
                     dict(type='Resize', keep_ratio=True),
@@ -246,16 +250,16 @@ data = dict(
         classes=['background', 'crack']),
     test=dict(
         type='CustomDataset',
-        data_root='data/lab_crack_speckled',
+        data_root='data/Public_all',
         img_dir='images/val',
         ann_dir='annotations/val',
-        img_suffix='.png',
+        img_suffix='.jpg',
         seg_map_suffix='.png',
         pipeline=[
             dict(type='LoadImageFromFile'),
             dict(
                 type='MultiScaleFlipAug',
-                img_scale=(3584, 1792), #2048, 1408),
+                img_scale=(4096, 2560),
                 flip=False,
                 transforms=[
                     dict(type='Resize', keep_ratio=True),
@@ -275,8 +279,8 @@ log_config = dict(
     interval=64, hooks=[dict(type='TextLoggerHook', by_epoch=False)])
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-load_from = 'pretrained/mask2former_beitv2_896_public_crack.pth' #pretrained/mask2former_beitv2_adapter_large_896_80k_ade20k.pth' #'./work_dirs/mask2former_beitv2_896_lab_speckle/best_mIoU_iter_76000_2images.pth'
-resume_from = None #'work_dirs/mask2former_beitv2_adapter_large_896_320k_Kuba_nocrop_all_ss_eval_on_1408_grad_acc/iter_308000.pth'  #'work_dirs/mask2former_beit_adapter_large_640_160k_Kuba_nocrop_all_ss_grad_acc_eval_on_1280/iter_2000.pth'
+load_from = 'pretrained/mask2former_beit_640_public_crack.pth'
+resume_from = None 
 workflow = [('train', 1)]
 cudnn_benchmark = True
 optimizer = dict(
@@ -286,14 +290,12 @@ optimizer = dict(
     weight_decay=0.05,
     constructor='LayerDecayOptimizerConstructor',
     paramwise_cfg=dict(num_layers=24, layer_decay_rate=0.9))
-optimizer_config = dict(type="GradientCumulativeOptimizerHook", cumulative_iters=32)
-lr_config = dict(policy='poly', warmup='linear',
-                 warmup_iters=24000,
-                 warmup_ratio=1e-6, power=1.0, min_lr=0.0, by_epoch=False)
-runner = dict(type='IterBasedRunner', max_iters=160000)
-checkpoint_config = dict(by_epoch=False, interval=4000, max_keep_ckpts=1)
-evaluation = dict(interval=4000, metric='mIoU', pre_eval=True, save_best='mIoU')
-pretrained = 'pretrained/beitv2_large_patch16_224_pt1k_ft21k.pth'
-work_dir = './work_dirs/mask2former_beitv2_896_lab_speckle'
+optimizer_config = dict(type="GradientCumulativeOptimizerHook", cumulative_iters=8)
+lr_config = dict(policy='poly', power=1.0, min_lr=0.0, by_epoch=False)
+runner = dict(type='IterBasedRunner', max_iters=24000)
+checkpoint_config = dict(by_epoch=False, interval=100, max_keep_ckpts=1)
+evaluation = dict(interval=100, metric='mIoU', pre_eval=True, save_best='mIoU')
+pretrained = 'pretrained/beit_large_patch16_224_pt22k_ft22k.pth'
+work_dir = './work_dirs/mask2former_beit_640_lab_crack'
 gpu_ids = range(0, 1)
 auto_resume = False

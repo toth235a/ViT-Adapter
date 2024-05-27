@@ -23,15 +23,15 @@ Recommended installation:
     (This is the same as for the original ViT-Adapter library but includes scipy and downgrades yapf and setuptools).
 
 2. Download one or more of the pretrained crack models from:
-    [https://huggingface.co/toth235a/mask2former_vitadapter_beitv2_896_crack/tree/main](https://huggingface.co/toth235a/mask2former_vitadapter_beitv2_896_crack/tree/main)
+    [https://huggingface.co/toth235a/mask2former_vitadapter_crack/tree/main](https://huggingface.co/toth235a/mask2former_vitadapter_beitv2_896_crack/tree/main)
     and put them in the `pretrained` folder. You can do it with one of the following:
 
     ```bash
-    wget -P pretrained https://huggingface.co/toth235a/mask2former_vitadapter_beitv2_896_crack/resolve/main/mask2former_beitv2_896_public_crack.pth
+    wget -P pretrained https://huggingface.co/toth235a/mask2former_vitadapter_crack/resolve/main/mask2former_beitv2_896_public_crack.pth
     ```
 
     ```bash
-    wget -P pretrained https://huggingface.co/toth235a/mask2former_vitadapter_beitv2_896_crack/resolve/main/mask2former_beitv2_896_speckled_crack.pth
+    wget -P pretrained https://huggingface.co/toth235a/mask2former_vitadapter_crack/resolve/main/mask2former_beitv2_896_lab_crack.pth
     ```
     The first one is a generic model for cracks. The second one is a model for segmenting cracks in a laboratory setting, where the surface of the material was painted with speckles (typically for DIC). Check out data/lab_crack_speckled/images/train for examples. Please note that the speckles can be different according to the method used. If your speckles look different, this model may not work for you well. 
 
@@ -62,7 +62,7 @@ Recommended installation:
 
 5. Training: from the `ViT-Adapter/segmentation` folder you can train the model with:
     ```bash
-    bash dist_train.sh configs/crack/segmentation/configs/crack/mask2former_beitv2_896_lab_speckle.py 1
+    bash dist_train.sh configs/crack/segmentation/configs/crack/mask2former_beitv2_896_lab_crack.py 1
     ```
     This will finetune a general crack segmentation model with speckled crack images. See more about config files in the #Advanced section.
 

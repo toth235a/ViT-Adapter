@@ -1,3 +1,13 @@
+# ViT-Adapter for 1 GPU
+
+
+This is a fork of [ViT-Adapter](https://github.com/czczup/ViT-Adapter) adapted for training on a single GPU. For more information, have a look at [segmentation/README.md](segmentation/README.md).
+
+
+
+
+The following is the original README.
+
 # ViT-Adapter
 
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/vision-transformer-adapter-for-dense/semantic-segmentation-on-ade20k)](https://paperswithcode.com/sota/semantic-segmentation-on-ade20k?p=vision-transformer-adapter-for-dense)
