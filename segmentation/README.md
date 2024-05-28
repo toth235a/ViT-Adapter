@@ -31,9 +31,17 @@ Recommended installation:
     ```
 
     ```bash
+    wget -P pretrained https://huggingface.co/toth235a/mask2former_vitadapter_crack/resolve/main/mask2former_beit_640_public_crack.pth
+    ```
+
+    ```bash
     wget -P pretrained https://huggingface.co/toth235a/mask2former_vitadapter_crack/resolve/main/mask2former_beitv2_896_lab_crack.pth
     ```
-    The first one is a generic model for cracks. The second one is a model for segmenting cracks in a laboratory setting, where the surface of the material was painted with speckles (typically for DIC). Check out data/lab_crack_speckled/images/train for examples. Please note that the speckles can be different according to the method used. If your speckles look different, this model may not work for you well. 
+
+    ```bash
+    wget -P pretrained https://huggingface.co/toth235a/mask2former_vitadapter_crack/resolve/main/mask2former_beit_640_lab_crack.pth
+    ```
+    The first two are generic models for cracks (a larger, with crop size 896 and a smaller, with crop size 640). The third and the fourth are models for segmenting cracks in a laboratory setting, where the surface of the material was painted with speckles (typically for DIC). Check out data/lab_crack_speckled/images/train for examples. Please note that the speckles can be different according to the method used. If your speckles look different, this model may not work for you well. 
 
 
 3. If you want to train a crack model but do not want to use one of the above models, you can download and unzip a model trained on ade20k from below, in the Results and Models section (ade20k table, Mask2Former ViT-Adapter-L BEiT-L row for crop size of 640 or Mask2Former ViT-Adapter-L BEiTv2-L+COCO row for crop size of 896). Put it in the `pretrained` folder. You can do it with:

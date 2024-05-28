@@ -185,8 +185,8 @@ test_pipeline = [
         ])
 ]
 data = dict(
-    samples_per_gpu=1,
-    workers_per_gpu=1,
+    samples_per_gpu=2,
+    workers_per_gpu=4,
     train=dict(
         #type='RepeatDataset',
         #times=160000,
@@ -293,8 +293,8 @@ optimizer = dict(
 optimizer_config = dict(type="GradientCumulativeOptimizerHook", cumulative_iters=8)
 lr_config = dict(policy='poly', power=1.0, min_lr=0.0, by_epoch=False)
 runner = dict(type='IterBasedRunner', max_iters=24000)
-checkpoint_config = dict(by_epoch=False, interval=100, max_keep_ckpts=1)
-evaluation = dict(interval=100, metric='mIoU', pre_eval=True, save_best='mIoU')
+checkpoint_config = dict(by_epoch=False, interval=4000, max_keep_ckpts=1)
+evaluation = dict(interval=4000, metric='mIoU', pre_eval=True, save_best='mIoU')
 pretrained = 'pretrained/beit_large_patch16_224_pt22k_ft22k.pth'
 work_dir = './work_dirs/mask2former_beit_640_lab_crack'
 gpu_ids = range(0, 1)
